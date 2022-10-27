@@ -1,0 +1,127 @@
+#!/bin/bash
+module load gdc angsd/0.933
+
+bam_path="/path/to/bam/files"
+ref="/path/to/refernce/genome/WF_wtdbg2.chr.fasta"
+out="/output/path"
+bed="bedfile_with_positions.bed"
+proc=2
+outname="out_put_name"
+
+
+
+#create list with gutturosus bam files
+ ls ${bam_path}/gutturosus/*.bam > ${out}/bam.filelist_kilch
+ 
+#create list with historical arenicolus bam files
+ls ${bam_path}/arenicolus_pre/*.bam > ${out}/bam.filelist_sf
+
+#create list with historical macrophthalmus bam files
+ls ${bam_path}/macrophthalmus_pre/*.bam > ${out}/bam.filelist_gf
+
+#create list with historical wartmanni bam files
+ls ${bam_path}/wartmanni_pre/*.bam > ${out}/bam.filelist_bf
+
+#create list with 90m bam files
+ls ${bam_path}/90m/*.bam > ${out}/bam.filelist_90
+
+#create list with 60m bam files
+ls ${bam_path}/60m/*.bam > ${out}/bam.filelist_90
+
+#create list with 40m bam files
+ls ${bam_path}/40m/*.bam > ${out}/bam.filelist_90
+
+#create list with 20m bam files
+ls ${bam_path}/20m/*.bam > ${out}/bam.filelist_90
+
+#create list with 12m bam files
+ls ${bam_path}/12m/*.bam > ${out}/bam.filelist_90
+
+#create list with 4m bam files
+ls ${bam_path}/4m/*.bam > ${out}/bam.filelist_90
+
+#create header
+
+echo chromo position kilch gangfisch sandfelchen blaufelchen 4m 12m 20m 40m 60m 90m > $out/frequency_table_${outname}.txt
+
+
+#loop through all positinos in bed file and calculate allele frequencies
+cat $bed | cut -f1,3 | sed 's/\t/:/g' | while read position; do
+    
+    
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_k -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_kilch -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1 
+chrom=$(zcat $out/freq_test_${position}_k.mafs.gz  | cut -f1 | sed -n 2p)
+bp=$(zcat $out/freq_test_${position}_k.mafs.gz  | cut -f2 | sed -n 2p)
+k=$(zcat $out/freq_test_${position}_k.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$k" ]
+	then
+	k="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_sf -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_sf -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+sf=$(zcat $out/freq_test_${position}_sf.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$sf" ]
+	then
+	sf="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_gf -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_gf -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+gf=$(zcat $out/freq_test_${position}_gf.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$gf" ]
+	then
+	gf="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_bf -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_bf -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+bf=$(zcat $out/freq_test_${position}_bf.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$bf" ]
+	then
+	bf="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_90 -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_90m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+m90m=$(zcat $out/freq_test_${position}_90.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$m90m" ]
+	then
+	m90m="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_60 -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_60m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+m60m=$(zcat $out/freq_test_${position}_60.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$m60m" ]
+	then
+	m60m="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_40 -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_40m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+m40m=$(zcat $out/freq_test_${position}_40.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$m40m" ]
+	then
+	m40m="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_20 -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_20m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+m20m=$(zcat $out/freq_test_${position}_20.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$m20m" ]
+	then
+	m20m="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_12 -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_12m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+m12m=$(zcat $out/freq_test_${position}_12.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$m12m" ]
+	then
+	m12m="NA"
+fi
+
+angsd -GL 1 -ref ${ref} -r $position -out $out/freq_test_${position}_4 -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_4m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+m4m=$(zcat $out/freq_test_${position}_4.mafs.gz  | cut -f6 | sed -n 2p)
+if [ -z "$m4m" ]
+	then
+	m4m="NA"
+fi
+
+echo $chrom $bp $k $gf $sf $bf $m4m $m12m $m20m $m40m $m60m $m90m >> $out/frequency_table_${outname}.txt
+
+done
+
