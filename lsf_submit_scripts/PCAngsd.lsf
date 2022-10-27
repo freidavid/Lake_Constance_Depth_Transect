@@ -2,19 +2,18 @@
 
 
 ## load modules 
-module load gcc/4.8.2 gdc angsd/0.919 python/3.6.1 pcangsd/0.98
+module load gcc/4.8.2 gdc python/3.6.1
 
 
 #Define all paths needed
 input="/path/to/input/beagle/file/"
 out="/path/to/write/output/files"
+pcangsd_1_02="/path/to/pcangsd/pcangsd.py"
 
 
 ###############################################################################################
 
 #Then run PCAngsd on beagle (genotype likelihood) file:
-pcangsd.py -beagle ${input}/min_32_ind.beagle.gz -o ${out}/min_32_ind -minMaf 0.05 -e 3 -admix
-#convert from numpy to csv
-python ./numpy_to_csv.py -i ${out}/min_32_ind.cov.npy  -o ${out}/min_32_ind.cov
-python ./numpy_to_csv.py -i ${out}/min_32_ind.admix.Q.npy  -o ${out}/min_32_ind..qopt
+python $pcangsd_1_02 -beagle ${scr_path}/input.beagle.gz -o ${out}/output -minMaf 0.05 -selection -sites_save -snp_weights
+
 
