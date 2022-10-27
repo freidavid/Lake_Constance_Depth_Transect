@@ -1,0 +1,21 @@
+#!/bin/bash
+
+module load gdc gcc bedtools
+
+#bedtools counting the same as bedtools
+
+bed="/path/to/position/file/selection_fdr.bed"
+annotation="/path/to/gene/annotation/AWG_v2/allr3.gff"
+filter="/path/to/quality/filter/quality_filter.pl"
+out="/cluster/scratch/davidfrei/David_Ancestor"
+
+#filter annotation for AED over 0.6
+perl ${filter} -a 0.6 ${annotation} > ${scr_path}/annotation_AED_0.6.gff
+filtered=${scr_path}/annotation_AED_0.6.gff
+
+#filter for only those lines with "gene" in column 3
+awk '{ if ($3 == "gene") { print } }' ${filtered} > ${scr_path}/only_genes.gff
+filtered=${scr_path}/only_genes.gff
+
+#get overlapping feature
+bedtools intersect -a ${filtered} -b ${bed} > $out/gene_list.txt
