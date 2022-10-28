@@ -1,0 +1,35 @@
+module load gdc angsd/0.933
+
+ref="/path/to/reference/genome/WF_wtdbg2.chr.fasta"
+out="/path/to/output"
+input="/path/to/input"
+proc=2
+
+#index all relevant sites where frequencies should be calculated (text file) for input in angsd
+angsd sites index $input/all_relevant_sites.txt
+
+
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_kilch_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_kilch -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_sandfelchen_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_sf -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_gangfisch_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_gf -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_blaufelchen_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_bf -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_90_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_90m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_60_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_60m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_40_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_40m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_20_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_20m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_12_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_12m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+angsd -GL 1 -ref ${ref} -sites $input/all_relevant_sites.txt -out $out/freq_4_genomewide -nThreads ${proc} -doMajorMinor 4 -doMaf 1 -bam ${out}/bam.filelist_4m -minMapQ 30 -minQ 20 -remove_bads 1 -uniqueOnly 1 -only_proper_pairs 0 -doPost 1  
+
+
+#create header
+echo "chr pos ref alt kilch gangfisch sandfelchen blaufelchen 90m 60m 40m 20m 12m 4m" > $out/int3.txt
+
+#get columns 1-4 and kilch frequencies
+zcat $out/freq_kilch_genomewide.mafs.gz | cut -f1-4,6 |sed -e '1,11d'  > $out/int.txt
+
+#add other frequencies
+paste $out/int.txt <(zcat $out/freq_gangfisch_genomewide.mafs.gz | cut -f6 |sed -e '1d' ) <(zcat $out/freq_sandfelchen_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_blaufelchen_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_90_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_60_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_40_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_20_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_12_genomewide.mafs.gz | cut -f6 |sed -e '1d') <(zcat $out/freq_4_genomewide.mafs.gz | cut -f6 |sed -e '1d') > $out/int2.txt
+
+#bring everything together
+cat $out/int3.txt $out/int2.txt > $out/genomewide_frequencies_fastpca.txt
+rm $out/int*.txt 
