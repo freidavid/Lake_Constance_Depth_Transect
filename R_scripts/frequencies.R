@@ -45,7 +45,7 @@ kilch_intro/total
 
 
 #make a plot with frequencies across all populations (figure 3)
-pdf("~/Dropbox/Depth_Transect/genomics/frequencies/fastpca_fdr_frequencies.pdf",width=14,height=6)
+pdf("~/fastpca_fdr_frequencies.pdf",width=14,height=6)
 
 #make emtpy plot
 label1<-c("4m","12m","20m","40m","60m","90m","Kilch_pre","Gang_pre","Sand_pre","Blau_pre")
