@@ -6,7 +6,7 @@ All scripts to generate the results (starting with processing of raw sequence da
 All scripts to visualize and finalize the data are in the folder R_scripts.
 
 
-## lsf_submit_scripts.
+## lsf_submit_scripts
 
 
 #### fastp.lsf
@@ -54,7 +54,7 @@ Used to extract the genes that are overlapping with the positions that are signf
 
 
 
- ## R_scripts.
+ ## R_scripts
  
  
  #### Histogram_individuals_caught_per_depth.R
