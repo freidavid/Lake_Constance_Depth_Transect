@@ -70,7 +70,7 @@ Used to extract the genes that are overlapping with the positions that are signf
  
 
 #### manhattan_custom_plot.R
-R-script to generate a custom manhattan plot (used for Figure 3A).
+R-script to generate a custom manhattan plot (used for Figure 3A), modified from R package qqman (Turner, 2018).
 
 
 #### partial_least_squares_regression_on_morphometrics.R
